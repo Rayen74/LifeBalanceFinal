@@ -1,0 +1,154 @@
+<!--
+  AppStyles.axaml  —  the "CSS" of the desktop app.
+  Selectors work like CSS:   Border.card   = element with class "card"
+                             Button.primary:pointerover = hover state
+  Apply a class in XAML with  Classes="card hero"
+-->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ===== Design tokens (like CSS variables) ===== -->
+    <Styles.Resources>
+        <Color x:Key="BgColor">#0F1117</Color>
+        <Color x:Key="SurfaceColor">#181B24</Color>
+        <Color x:Key="SurfaceHoverColor">#1F2330</Color>
+        <Color x:Key="BorderColor">#2A2F3E</Color>
+        <Color x:Key="AccentColor">#7C5CFF</Color>
+        <Color x:Key="AccentHoverColor">#9378FF</Color>
+        <Color x:Key="OkColor">#34D399</Color>
+        <Color x:Key="BadColor">#F87171</Color>
+        <Color x:Key="TextColor">#F3F4F8</Color>
+        <Color x:Key="MutedColor">#8B91A7</Color>
+
+        <SolidColorBrush x:Key="BgBrush" Color="{StaticResource BgColor}" />
+        <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}" />
+        <SolidColorBrush x:Key="SurfaceHoverBrush" Color="{StaticResource SurfaceHoverColor}" />
+        <SolidColorBrush x:Key="BorderBrush2" Color="{StaticResource BorderColor}" />
+        <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+        <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource AccentHoverColor}" />
+        <SolidColorBrush x:Key="OkBrush" Color="{StaticResource OkColor}" />
+        <SolidColorBrush x:Key="BadBrush" Color="{StaticResource BadColor}" />
+        <SolidColorBrush x:Key="TextBrush" Color="{StaticResource TextColor}" />
+        <SolidColorBrush x:Key="MutedBrush" Color="{StaticResource MutedColor}" />
+    </Styles.Resources>
+
+    <!-- ===== Window / base text ===== -->
+    <Style Selector="Window">
+        <Setter Property="Background" Value="{DynamicResource BgBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        <Setter Property="FontFamily" Value="Segoe UI, Inter, Helvetica Neue, Arial, sans-serif" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
+    <!-- ===== Typography ===== -->
+    <Style Selector="TextBlock.title">
+        <Setter Property="FontSize" Value="30" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style Selector="TextBlock.subtitle">
+        <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
+        <Setter Property="Margin" Value="0,4,0,0" />
+    </Style>
+    <Style Selector="TextBlock.label">
+        <Setter Property="Foreground" Value="{DynamicResource MutedBrush}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="TextBlock.bigNumber">
+        <Setter Property="FontSize" Value="56" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentHoverBrush}" />
+    </Style>
+    <Style Selector="TextBlock.areaName">
+        <Setter Property="FontSize" Value="17" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="TextBlock.icon">
+        <Setter Property="FontSize" Value="26" />
+    </Style>
+
+    <!-- ===== Cards ===== -->
+    <Style Selector="Border.card">
+        <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush2}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="16" />
+        <Setter Property="Padding" Value="20" />
+    </Style>
+    <Style Selector="Border.card.area:pointerover">
+        <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="Border.card.hero">
+        <Setter Property="Background">
+            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                <GradientStop Color="#2A2150" Offset="0" />
+                <GradientStop Color="#181B24" Offset="1" />
+            </LinearGradientBrush>
+        </Setter>
+    </Style>
+
+    <!-- ===== Status pill ===== -->
+    <Style Selector="Border.pill">
+        <Setter Property="CornerRadius" Value="999" />
+        <Setter Property="Padding" Value="14,6" />
+        <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush2}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+    <Style Selector="Border.pill.ok">
+        <Setter Property="BorderBrush" Value="{DynamicResource OkBrush}" />
+    </Style>
+    <Style Selector="Border.pill.bad">
+        <Setter Property="BorderBrush" Value="{DynamicResource BadBrush}" />
+    </Style>
+    <Style Selector="Border.pill.ok > TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource OkBrush}" />
+    </Style>
+    <Style Selector="Border.pill.bad > TextBlock">
+        <Setter Property="Foreground" Value="{DynamicResource BadBrush}" />
+    </Style>
+
+    <!-- ===== Buttons ===== -->
+    <Style Selector="Button.ghost">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush2}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Padding" Value="14,7" />
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    </Style>
+    <Style Selector="Button.ghost:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource SurfaceHoverBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+    </Style>
+
+    <Style Selector="Button.step">
+        <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Width" Value="38" />
+        <Setter Property="Height" Value="38" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.step:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="Button.step:pressed">
+        <Setter Property="RenderTransform" Value="scale(0.94)" />
+    </Style>
+
+    <!-- ===== Progress bar ===== -->
+    <Style Selector="ProgressBar.area">
+        <Setter Property="MinHeight" Value="10" />
+        <Setter Property="Height" Value="10" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="Background" Value="{DynamicResource BorderBrush2}" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+    </Style>
+
+</Styles>

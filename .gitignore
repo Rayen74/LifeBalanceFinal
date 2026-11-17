@@ -1,0 +1,22 @@
+# Build output
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+
+# IDE files
+.idea/
+.vs/
+.vscode/
+*.user
+*.suo
+*.DotSettings.user
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and local config
+*.log
+appsettings.Development.json
+.env
