@@ -1,0 +1,16 @@
+C:\Users\User\OneDrive\Bureau\LFB\LifeBalanceF\Controller\bin\Debug\net10.0\Controller.deps.json
+C:\Users\User\OneDrive\Bureau\LFB\LifeBalanceF\Controller\bin\Debug\net10.0\Controller.dll
+C:\Users\User\OneDrive\Bureau\LFB\LifeBalanceF\Controller\bin\Debug\net10.0\Controller.pdb
+C:\Users\User\OneDrive\Bureau\LFB\LifeBalanceF\Controller\bin\Debug\net10.0\Model.dll
+C:\Users\User\OneDrive\Bureau\LFB\LifeBalanceF\Controller\bin\Debug\net10.0\Model.pdb
+C:\Users\User\OneDrive\Bureau\LFB\LifeBalanceF\Controller\obj\Debug\net10.0\Controller.csproj.AssemblyReference.cache
+C:\Users\User\OneDrive\Bureau\LFB\LifeBalanceF\Controller\obj\Debug\net10.0\Controller.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\User\OneDrive\Bureau\LFB\LifeBalanceF\Controller\obj\Debug\net10.0\Controller.AssemblyInfoInputs.cache
+C:\Users\User\OneDrive\Bureau\LFB\LifeBalanceF\Controller\obj\Debug\net10.0\Controller.AssemblyInfo.cs
+C:\Users\User\OneDrive\Bureau\LFB\LifeBalanceF\Controller\obj\Debug\net10.0\Controller.csproj.CoreCompileInputs.cache
+C:\Users\User\OneDrive\Bureau\LFB\LifeBalanceF\Controller\obj\Debug\net10.0\Controller.sourcelink.json
+C:\Users\User\OneDrive\Bureau\LFB\LifeBalanceF\Controller\obj\Debug\net10.0\Controller.csproj.Up2Date
+C:\Users\User\OneDrive\Bureau\LFB\LifeBalanceF\Controller\obj\Debug\net10.0\Controller.dll
+C:\Users\User\OneDrive\Bureau\LFB\LifeBalanceF\Controller\obj\Debug\net10.0\refint\Controller.dll
+C:\Users\User\OneDrive\Bureau\LFB\LifeBalanceF\Controller\obj\Debug\net10.0\Controller.pdb
+C:\Users\User\OneDrive\Bureau\LFB\LifeBalanceF\Controller\obj\Debug\net10.0\ref\Controller.dll
