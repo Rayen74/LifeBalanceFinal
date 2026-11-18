@@ -18,6 +18,7 @@ public partial class LoginWindow : Window
         {
             InfoText.Text = infoMessage;
             InfoText.IsVisible = true;
+            InfoBorder.IsVisible = true;
         }
 
         Opened += (_, _) => EmailBox.Focus();
@@ -26,6 +27,7 @@ public partial class LoginWindow : Window
     private async void OnSignInClick(object? sender, RoutedEventArgs e)
     {
         ErrorText.IsVisible = false;
+        ErrorBorder.IsVisible = false;
         SetBusy(true);
 
         var result = await App.Auth.LoginAsync(EmailBox.Text, PasswordBox.Text);
@@ -38,6 +40,7 @@ public partial class LoginWindow : Window
 
         ErrorText.Text = result.Error;
         ErrorText.IsVisible = true;
+        ErrorBorder.IsVisible = true;
         PasswordBox.Text = string.Empty;
         SetBusy(false);
     }

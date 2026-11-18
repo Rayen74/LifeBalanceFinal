@@ -14,18 +14,20 @@ public partial class RegisterWindow : Window
     private async void OnCreateClick(object? sender, RoutedEventArgs e)
     {
         ErrorText.IsVisible = false;
+        ErrorBorder.IsVisible = false;
         SetBusy(true);
 
         var result = await App.Auth.RegisterAsync(EmailBox.Text, PasswordBox.Text, ConfirmBox.Text);
 
         if (result.Success)
         {
-            App.ShowLogin("Account created. You can sign in now."); // closes this window
+            App.ShowLogin("Account created successfully. You can sign in now."); // closes this window
             return;
         }
 
         ErrorText.Text = result.Error;
         ErrorText.IsVisible = true;
+        ErrorBorder.IsVisible = true;
         SetBusy(false);
     }
 

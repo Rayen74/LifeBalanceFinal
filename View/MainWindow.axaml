@@ -1,77 +1,236 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:view="clr-namespace:View"
         x:Class="View.MainWindow"
-        Title="LifeBalance"
-        Width="1040" Height="720"
-        MinWidth="760" MinHeight="540"
+        Title="LifeBalance — Dashboard"
+        Width="1120" Height="760"
+        MinWidth="900" MinHeight="600"
         WindowStartupLocation="CenterScreen">
 
-    <Grid RowDefinitions="Auto,*" Margin="32">
+    <Grid ColumnDefinitions="240, *">
 
-        <!-- Header -->
-        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,24">
-            <StackPanel>
-                <TextBlock Classes="title" Text="LifeBalance" />
-                <TextBlock Classes="subtitle" Text="How balanced does your life feel today?" />
-            </StackPanel>
+        <!-- ================= SIDEBAR NAVIGATION ================= -->
+        <Border Grid.Column="0" Background="{DynamicResource WhiteBrush}"
+                BorderBrush="{DynamicResource BorderBrush2}" BorderThickness="0,0,1,0">
+            <Grid RowDefinitions="Auto, *, Auto" Margin="18,22,18,20">
 
-            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
-                <Border x:Name="DbPill" Classes="pill">
-                    <TextBlock x:Name="DbStatusText" Text="Checking database…" />
-                </Border>
-                <Button Classes="ghost" Content="Retry" Click="OnRetryClick" />
-                <TextBlock x:Name="UserText" Classes="label" VerticalAlignment="Center" />
-                <Button Classes="ghost" Content="Sign out" Click="OnSignOutClick" />
-            </StackPanel>
-        </Grid>
-
-        <ScrollViewer Grid.Row="1">
-            <StackPanel Spacing="20">
-
-                <!-- Balance score -->
-                <Border Classes="card hero">
-                    <StackPanel Spacing="4">
-                        <TextBlock Classes="label" Text="BALANCE SCORE" />
-                        <StackPanel Orientation="Horizontal" Spacing="8">
-                            <TextBlock x:Name="BalanceText" Classes="bigNumber" Text="0" />
-                            <TextBlock Text="/ 10" Classes="subtitle" VerticalAlignment="Bottom" Margin="0,0,0,12" />
+                <!-- Top Brand Area -->
+                <StackPanel Grid.Row="0" Spacing="16">
+                    <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <Border Width="34" Height="34" CornerRadius="8"
+                                Background="{DynamicResource PrimaryGradient}">
+                            <!-- Clean Vector Balance Scale Icon -->
+                            <Path Data="M12 3v17M4 7h16M4 7l-2 7h6L6 7zm14 0l-2 7h6l-2-7zM9 20h6"
+                                  Stroke="{DynamicResource WhiteBrush}" StrokeThickness="1.5"
+                                  Fill="Transparent" Width="18" Height="18" Stretch="Uniform"
+                                  HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <StackPanel VerticalAlignment="Center" Spacing="1">
+                            <StackPanel Orientation="Horizontal" Spacing="2">
+                                <TextBlock Text="LifeBalance" FontSize="17" FontWeight="Bold"
+                                           Foreground="{DynamicResource NavyBrush}" />
+                                <TextBlock Text="." FontSize="17" FontWeight="Bold"
+                                           Foreground="{DynamicResource TealBrush}" />
+                            </StackPanel>
+                            <TextBlock Text="PERSONAL WORKSPACE" FontSize="9" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TealBrush}" LetterSpacing="0.6" />
                         </StackPanel>
-                        <TextBlock x:Name="BalanceMessage" Classes="subtitle" Text="" />
                     </StackPanel>
-                </Border>
 
-                <!-- Life areas -->
-                <ItemsControl x:Name="AreasList">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border Classes="card area" Width="300" Margin="0,0,16,16">
-                                <StackPanel Spacing="14">
-                                    <Grid ColumnDefinitions="Auto,*,Auto">
-                                        <TextBlock Classes="icon" Text="{Binding Icon}" VerticalAlignment="Center" />
-                                        <TextBlock Grid.Column="1" Classes="areaName" Text="{Binding Name}"
-                                                   Margin="12,0,0,0" VerticalAlignment="Center" />
-                                        <TextBlock Grid.Column="2" Classes="label" Text="{Binding ScoreText}"
-                                                   VerticalAlignment="Center" />
-                                    </Grid>
+                    <Border Height="1" Background="{DynamicResource BorderBrush2}" />
+                </StackPanel>
 
-                                    <ProgressBar Classes="area" Minimum="0" Maximum="10" Value="{Binding Score}" />
+                <!-- Navigation List -->
+                <StackPanel Grid.Row="1" Spacing="4" Margin="0,16,0,0">
+                    <TextBlock Classes="label" Text="Navigation" Margin="8,0,8,6" />
 
-                                    <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
-                                        <Button Classes="step" Content="−" Click="OnDecreaseClick" />
-                                        <Button Classes="step" Content="+" Click="OnIncreaseClick" />
-                                    </StackPanel>
+                    <!-- Active Dashboard Navigation -->
+                    <Border Classes="navItem active">
+                        <Grid ColumnDefinitions="Auto, *, Auto">
+                            <Path Data="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"
+                                  Fill="{DynamicResource PrimaryBlueBrush}" Width="15" Height="15"
+                                  Stretch="Uniform" VerticalAlignment="Center" Margin="0,0,10,0" />
+                            <TextBlock Grid.Column="1" Text="Dashboard" VerticalAlignment="Center"
+                                       FontWeight="SemiBold" Foreground="{DynamicResource PrimaryBlueBrush}" />
+                            <Border Grid.Column="2" Classes="pill teal" Padding="6,2">
+                                <TextBlock Text="Active" FontSize="10" FontWeight="Bold" />
+                            </Border>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
+                <!-- Bottom User Info & Sign Out -->
+                <StackPanel Grid.Row="2" Spacing="10">
+                    <!-- User Profile Card -->
+                    <Border Background="#F8FAFC" BorderBrush="{DynamicResource BorderBrush2}"
+                            BorderThickness="1" CornerRadius="8" Padding="12,10">
+                        <Grid ColumnDefinitions="Auto, *">
+                            <Border Width="30" Height="30" CornerRadius="15"
+                                    Background="{DynamicResource NavyBrush}"
+                                    VerticalAlignment="Center">
+                                <Path Data="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                                      Fill="{DynamicResource WhiteBrush}" Width="14" Height="14"
+                                      Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
+                                <TextBlock Text="Signed in as" FontSize="10"
+                                           Foreground="{DynamicResource SecondaryTextBrush}" />
+                                <TextBlock x:Name="UserText" FontSize="12" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource PrimaryTextBrush}"
+                                           TextTrimming="CharacterEllipsis" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Sign Out Button -->
+                    <Button Classes="ghost" HorizontalAlignment="Stretch" Click="OnSignOutClick">
+                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                            <Path Data="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"
+                                  Fill="{DynamicResource PrimaryTextBrush}" Width="14" Height="14"
+                                  Stretch="Uniform" VerticalAlignment="Center" />
+                            <TextBlock Text="Sign out" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+            </Grid>
+        </Border>
+
+        <!-- ================= MAIN CONTENT AREA ================= -->
+        <Grid Grid.Column="1" RowDefinitions="Auto, *">
+
+            <!-- Top Header Bar -->
+            <Border Grid.Row="0" Background="{DynamicResource WhiteBrush}"
+                    BorderBrush="{DynamicResource BorderBrush2}" BorderThickness="0,0,0,1"
+                    Padding="28,16,28,16">
+                <Grid ColumnDefinitions="*, Auto">
+                    <!-- Title & Subtitle -->
+                    <StackPanel Spacing="2" VerticalAlignment="Center">
+                        <TextBlock Classes="pageTitle" Text="Life Balance Overview" />
+                        <TextBlock Classes="subtitle" Text="Assess and maintain fulfillment across your core life dimensions." />
+                    </StackPanel>
+
+                    <!-- Right Status & Actions -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <Border x:Name="DbPill" Classes="pill">
+                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                <Path Data="M12 2C6.48 2 2 3.79 2 6v12c0 2.21 4.48 4 10 4s10-1.79 10-4V6c0-2.21-4.48-4-10-4zm0 2c4.41 0 8 1.34 8 3s-3.59 3-8 3-8-1.34-8-3 3.59-3 8-3zm0 16c-4.41 0-8-1.34-8-3v-2.22c1.94 1.14 4.82 1.72 8 1.72s6.06-.58 8-1.72V17c0 1.66-3.59 3-8 3zm0-5c-4.41 0-8-1.34-8-3v-2.22c1.94 1.14 4.82 1.72 8 1.72s6.06-.58 8-1.72V12c0 1.66-3.59 3-8 3z"
+                                      Fill="{DynamicResource SecondaryTextBrush}" Width="12" Height="12"
+                                      Stretch="Uniform" VerticalAlignment="Center" />
+                                <TextBlock x:Name="DbStatusText" Text="Checking database…" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                        <Button Classes="ghost" Click="OnRetryClick" ToolTip.Tip="Check database connection">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <Path Data="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"
+                                      Fill="{DynamicResource PrimaryTextBrush}" Width="12" Height="12"
+                                      Stretch="Uniform" VerticalAlignment="Center" />
+                                <TextBlock Text="Retry" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Scrollable Content Body -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="28,22,28,28" Spacing="22">
+
+                    <!-- ================= HERO BALANCE CARD ================= -->
+                    <Border Classes="card hero">
+                        <Grid ColumnDefinitions="*, Auto">
+                            <StackPanel Spacing="6" VerticalAlignment="Center">
+                                <TextBlock Classes="label" Text="Overall balance score" Foreground="#94A3B8" />
+
+                                <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,2,0,2">
+                                    <TextBlock x:Name="BalanceText" Classes="bigNumber" Foreground="{DynamicResource WhiteBrush}" Text="0" />
+                                    <TextBlock Text="/ 10" FontSize="18" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TealBrush}"
+                                               VerticalAlignment="Bottom" Margin="0,0,0,10" />
+                                </StackPanel>
+
+                                <TextBlock x:Name="BalanceMessage" FontSize="14" FontWeight="Medium"
+                                           Foreground="#E2E8F0" Text="Calculating score…" />
+                            </StackPanel>
+
+                            <!-- Reference Target Indicator -->
+                            <Border Grid.Column="1" Background="#162548" CornerRadius="8"
+                                    BorderBrush="#253A68" BorderThickness="1"
+                                    Padding="16,12" VerticalAlignment="Center">
+                                <StackPanel Spacing="4" HorizontalAlignment="Center">
+                                    <TextBlock Text="Target: ≥ 8.0" FontSize="12" FontWeight="SemiBold"
+                                               Foreground="#5EEAD4" HorizontalAlignment="Center" />
+                                    <TextBlock Text="Optimal balance" FontSize="11"
+                                               Foreground="#94A3B8" HorizontalAlignment="Center" />
                                 </StackPanel>
                             </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                        </Grid>
+                    </Border>
 
-            </StackPanel>
-        </ScrollViewer>
+                    <!-- ================= LIFE AREAS SECTION ================= -->
+                    <StackPanel Spacing="14">
+                        <StackPanel Spacing="2">
+                            <TextBlock Classes="sectionHeader" Text="Life Dimensions" />
+                            <TextBlock Classes="subtitle"
+                                       Text="Use the stepper controls to adjust your satisfaction level for each area (0 to 10)." />
+                        </StackPanel>
+
+                        <!-- Areas Grid: Exactly 3 cards per row, spanning the full width with zero unused space -->
+                        <ItemsControl x:Name="AreasList" Margin="-6,0,-6,0">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="3" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Classes="card area" Margin="6" Padding="16" HorizontalAlignment="Stretch">
+                                        <StackPanel Spacing="12">
+
+                                            <!-- Header: Vector Icon, Name & Score Badge -->
+                                            <Grid ColumnDefinitions="Auto, *, Auto">
+                                                <Border Width="34" Height="34" CornerRadius="8"
+                                                        Background="#F1F5F9" VerticalAlignment="Center">
+                                                    <!-- Clean Native Vector Icon via Converter -->
+                                                    <Path Data="{Binding Name, Converter={x:Static view:AreaIconConverter.Instance}}"
+                                                          Fill="{DynamicResource NavyBrush}" Width="16" Height="16"
+                                                          Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                </Border>
+
+                                                <TextBlock Grid.Column="1" Classes="cardTitle" Text="{Binding Name}"
+                                                           Margin="10,0,0,0" VerticalAlignment="Center"
+                                                           TextTrimming="CharacterEllipsis" />
+
+                                                <Border Grid.Column="2" Classes="pill teal" Padding="8,3" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding ScoreText}" FontWeight="Bold" FontSize="11" />
+                                                </Border>
+                                            </Grid>
+
+                                            <!-- Progress Bar Indicator -->
+                                            <ProgressBar Classes="area" Minimum="0" Maximum="10" Value="{Binding Score}" />
+
+                                            <!-- Stepper Controls & Label -->
+                                            <Grid ColumnDefinitions="*, Auto">
+                                                <TextBlock Classes="subtitle" Text="Level (0–10)"
+                                                           FontSize="12" VerticalAlignment="Center" />
+                                                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6">
+                                                    <Button Classes="step" Content="−" Click="OnDecreaseClick"
+                                                            ToolTip.Tip="Decrease score" />
+                                                    <Button Classes="step" Content="+" Click="OnIncreaseClick"
+                                                            ToolTip.Tip="Increase score" />
+                                                </StackPanel>
+                                            </Grid>
+
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
     </Grid>
 </Window>
