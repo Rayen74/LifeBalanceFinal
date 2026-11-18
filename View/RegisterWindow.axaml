@@ -1,0 +1,56 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="View.RegisterWindow"
+        Title="LifeBalance - Create account"
+        Width="520" Height="760"
+        MinWidth="380" MinHeight="660"
+        WindowStartupLocation="CenterScreen">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Border Classes="card" MaxWidth="420" Margin="24" Padding="28" VerticalAlignment="Center">
+            <StackPanel Spacing="14">
+
+                <!-- Branding -->
+                <StackPanel HorizontalAlignment="Center" Spacing="2" Margin="0,0,0,8">
+                    <TextBlock Classes="icon" Text="⚖️" FontSize="40" HorizontalAlignment="Center" />
+                    <TextBlock Classes="title" Text="Create account" HorizontalAlignment="Center" />
+                    <TextBlock Classes="subtitle" Text="Start tracking your life balance."
+                               HorizontalAlignment="Center" />
+                </StackPanel>
+
+                <StackPanel Spacing="6">
+                    <TextBlock Classes="label" Text="EMAIL" />
+                    <TextBox x:Name="EmailBox" Classes="field" Watermark="you@example.com" />
+                </StackPanel>
+
+                <StackPanel Spacing="6">
+                    <TextBlock Classes="label" Text="PASSWORD" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBox x:Name="PasswordBox" Classes="field" PasswordChar="•" Watermark="Choose a password" />
+                        <Button x:Name="ToggleButton" Grid.Column="1" Classes="ghost" Content="Show"
+                                Margin="8,0,0,0" Click="OnTogglePasswordClick" />
+                    </Grid>
+                    <TextBlock Classes="label" Text="At least 8 characters, with a letter and a number." />
+                </StackPanel>
+
+                <StackPanel Spacing="6">
+                    <TextBlock Classes="label" Text="CONFIRM PASSWORD" />
+                    <TextBox x:Name="ConfirmBox" Classes="field" PasswordChar="•" Watermark="Repeat the password" />
+                </StackPanel>
+
+                <TextBlock x:Name="ErrorText" Classes="error" IsVisible="False" />
+
+                <Button x:Name="CreateButton" Classes="primary" Content="Create account" IsDefault="True"
+                        Click="OnCreateClick" />
+                <ProgressBar x:Name="BusyBar" IsIndeterminate="True" IsVisible="False" Height="4" />
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="4">
+                    <TextBlock Classes="subtitle" Text="Already have an account?" Margin="0"
+                               VerticalAlignment="Center" />
+                    <Button x:Name="BackButton" Classes="link" Content="Sign in" Click="OnBackToLoginClick" />
+                </StackPanel>
+
+            </StackPanel>
+        </Border>
+    </ScrollViewer>
+</Window>

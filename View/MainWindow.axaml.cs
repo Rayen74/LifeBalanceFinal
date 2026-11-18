@@ -17,7 +17,25 @@ public partial class MainWindow : Window
             area.PropertyChanged += (_, _) => UpdateBalance();
         UpdateBalance();
 
-        Opened += async (_, _) => await RefreshDatabaseStatusAsync();
+        UserText.Text = App.Auth.CurrentUser?.Email;
+
+        Opened += async (_, _) =>
+        {
+            // Safety net: the dashboard never stays open without a signed-in user.
+            if (!App.Auth.IsAuthenticated)
+            {
+                App.ShowLogin();
+                return;
+            }
+
+            await RefreshDatabaseStatusAsync();
+        };
+    }
+
+    private void OnSignOutClick(object? sender, RoutedEventArgs e)
+    {
+        App.Auth.Logout();
+        App.ShowLogin();
     }
 
     private void UpdateBalance()

@@ -142,6 +142,50 @@
         <Setter Property="RenderTransform" Value="scale(0.94)" />
     </Style>
 
+    <!-- ===== Auth screens (Login / Register) ===== -->
+    <Style Selector="Button.primary">
+        <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Padding" Value="14,11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.primary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style Selector="Button.primary:disabled /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Opacity" Value="0.5" />
+    </Style>
+
+    <Style Selector="Button.link">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource AccentHoverBrush}" />
+        <Setter Property="Padding" Value="4,2" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="Button.link:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+
+    <Style Selector="TextBox.field">
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Padding" Value="12,10" />
+        <Setter Property="MinHeight" Value="42" />
+    </Style>
+
+    <Style Selector="TextBlock.error">
+        <Setter Property="Foreground" Value="{DynamicResource BadBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+    <Style Selector="TextBlock.success">
+        <Setter Property="Foreground" Value="{DynamicResource OkBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
     <!-- ===== Progress bar ===== -->
     <Style Selector="ProgressBar.area">
         <Setter Property="MinHeight" Value="10" />

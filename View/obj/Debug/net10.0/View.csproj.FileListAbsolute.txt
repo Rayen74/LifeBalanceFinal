@@ -169,3 +169,4 @@ C:\Users\User\OneDrive\Bureau\LFB\LifeBalanceF\View\bin\Debug\net10.0\runtimes\w
 C:\Users\User\OneDrive\Bureau\LFB\LifeBalanceF\View\bin\Debug\net10.0\runtimes\win-x86\native\libSkiaSharp.dll
 C:\Users\User\OneDrive\Bureau\LFB\LifeBalanceF\View\obj\Debug\net10.0\Avalonia\Resources.Inputs.cache
 C:\Users\User\OneDrive\Bureau\LFB\LifeBalanceF\View\obj\Debug\net10.0\Avalonia\resources
+C:\Users\User\OneDrive\Bureau\LFB\LifeBalanceF\View\bin\Debug\net10.0\BCrypt-Net-Next.dll

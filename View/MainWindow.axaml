@@ -20,6 +20,8 @@
                     <TextBlock x:Name="DbStatusText" Text="Checking database…" />
                 </Border>
                 <Button Classes="ghost" Content="Retry" Click="OnRetryClick" />
+                <TextBlock x:Name="UserText" Classes="label" VerticalAlignment="Center" />
+                <Button Classes="ghost" Content="Sign out" Click="OnSignOutClick" />
             </StackPanel>
         </Grid>
 
