@@ -13,10 +13,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Avalonia" Version="11.3.*" />
-      <PackageReference Include="Avalonia.Desktop" Version="11.3.*" />
-      <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.*" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.23">
+      <PackageReference Include="Avalonia" />
+      <PackageReference Include="Avalonia.Desktop" />
+      <PackageReference Include="Avalonia.Themes.Fluent" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>

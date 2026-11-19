@@ -1,8 +1,11 @@
 # Build output
-bin/
-obj/
-[Dd]ebug/
-[Rr]elease/
+**/[Bb]in/
+**/[Oo]bj/
+**/[Dd]ebug/
+**/[Rr]elease/
+
+# NuGet lock files MUST be tracked by Git
+!**/packages.lock.json
 
 # IDE files
 .idea/
@@ -10,13 +13,15 @@ obj/
 .vscode/
 *.user
 *.suo
+*.userosscache
+*.sln.docstates
 *.DotSettings.user
 
 # OS files
 .DS_Store
 Thumbs.db
 
-# Logs and local config
+# Logs and local configuration
 *.log
 appsettings.Development.json
 .env
