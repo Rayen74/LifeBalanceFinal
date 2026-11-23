@@ -10,10 +10,10 @@ The solution (`LifeBalanceF.sln`) is composed of four projects, each with a clea
 
 | Project | Target Framework | Responsibility |
 |---|---|---|
-| **Model** (`Model/Model.csproj`) | `net10.0` | Domain entities (`User`), Entity Framework Core `LifeBalanceDbContext`, PostgreSQL mapping, and database migrations. |
-| **Controller** (`Controller/Controller.csproj`) | `net10.0` | Authentication services (`AuthService`), BCrypt password hashing (`PasswordService`), local JSON session manager (`SessionManager`), user repository, and dashboard state. |
-| **View** (`View/View.csproj`) | `net10.0` | Avalonia desktop user interface, window orchestration, authentication forms (`LoginWindow`, `RegisterWindow`), and the main dashboard (`MainWindow`). |
-| **Tests** (`Tests/Tests.csproj`) | `net10.0` | xUnit test suite (`AuthServiceTests`) validating registration, hashing, login, session persistence, duplicate email rejections, and database constraints. |
+| **Model** (`Model/Model.csproj`) | `net10.0` | Domain entities (`User`, `TaskBoard`, `TaskColumn`, `TaskItem`, `PersonalGoal`, `TaskGoal`, `Habit`, `HabitCompletion`), Entity Framework Core `LifeBalanceDbContext`, PostgreSQL mapping, and database migrations. |
+| **Controller** (`Controller/Controller.csproj`) | `net10.0` | Authentication services (`AuthService`), Productivity services (`BoardService`, `GoalService`, `HabitService`), BCrypt password hashing (`PasswordService`), local JSON session manager (`SessionManager`), user repository, and dashboard state. |
+| **View** (`View/View.csproj`) | `net10.0` | Avalonia desktop user interface, window orchestration, authentication forms (`LoginWindow`, `RegisterWindow`), main dashboard (`MainWindow`), Kanban board view (`KanbanBoardView`), habits view (`HabitsView`), goals view (`GoalsView`), and dialogs. |
+| **Tests** (`Tests/Tests.csproj`) | `net10.0` | xUnit test suites (`AuthServiceTests`, `ProductivityServiceTests`) validating auth, sessions, Kanban workflows, goal links, streak calculations, and database constraints. |
 
 ---
 
@@ -209,12 +209,25 @@ $env:LIFEBALANCE_TEST_DB = "Host=localhost;Port=5432;Database=lifebalancedb_test
 dotnet test Tests/Tests.csproj
 ```
 
-All 21 integration tests execute against the test database and verify:
+All 29 integration tests execute against the test database and verify:
 * User registration and UUID generation.
 * BCrypt hashing (no plaintext password storage).
 * Case-insensitive and trimmed duplicate email rejection.
 * Session creation, recovery across restarts, and invalidation on logout.
+* Default column creation (`To Do`, `In Progress`, `Done`) and card positioning.
+* Task moving across columns, position renumbering, and completion timestamp handling (`CompletedAt`).
+* Strict multi-user data isolation across Kanban boards, tasks, habits, and goals.
+* Dynamic board statistics calculations (Total, In Progress, Completed, Due Next 7 Days, Overdue).
+* Goal creation and task linking with cross-user rejection.
+* Habit creation, daily completion logging, uniqueness constraint enforcement, and consecutive streak calculations.
 * Database constraint enforcement.
+
+---
+
+## 8.1. Productivity Module Architecture
+
+For comprehensive documentation on the Productivity module design, entity models, database constraints, business workflows, and UI navigation, see:
+👉 [docs/PRODUCTIVITY_MODULE.md](docs/PRODUCTIVITY_MODULE.md)
 
 ---
 

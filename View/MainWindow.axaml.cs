@@ -1,5 +1,9 @@
+using System;
+using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Controller;
 
 namespace View;
@@ -71,4 +75,90 @@ public partial class MainWindow : Window
         if ((sender as Button)?.DataContext is LifeArea area)
             area.Score += delta;
     }
+
+    // ================= NAVIGATION SWITCHING =================
+
+    private void OnNavDashboardClick(object? sender, PointerPressedEventArgs e)
+    {
+        SwitchView(0);
+    }
+
+    private async void OnNavKanbanClick(object? sender, PointerPressedEventArgs e)
+    {
+        SwitchView(1);
+        await KanbanViewControl.LoadBoardsAsync();
+    }
+
+    private async void OnNavHabitsClick(object? sender, PointerPressedEventArgs e)
+    {
+        SwitchView(2);
+        await HabitsViewControl.LoadHabitsAsync();
+    }
+
+    private async void OnNavGoalsClick(object? sender, PointerPressedEventArgs e)
+    {
+        SwitchView(3);
+        await GoalsViewControl.LoadGoalsAsync();
+    }
+
+    private void SwitchView(int viewIndex)
+    {
+        // Reset Nav styles
+        ResetNavStyle(NavDashboard, IconDashboard, TextDashboard);
+        ResetNavStyle(NavKanban, IconKanban, TextKanban);
+        ResetNavStyle(NavHabits, IconHabits, TextHabits);
+        ResetNavStyle(NavGoals, IconGoals, TextGoals);
+
+        // Hide all views
+        DashboardContainer.IsVisible = false;
+        KanbanViewControl.IsVisible = false;
+        HabitsViewControl.IsVisible = false;
+        GoalsViewControl.IsVisible = false;
+
+        switch (viewIndex)
+        {
+            case 0:
+                SetActiveNav(NavDashboard, IconDashboard, TextDashboard);
+                DashboardContainer.IsVisible = true;
+                HeaderTitle.Text = "Life Balance Overview";
+                HeaderSubtitle.Text = "Assess and maintain fulfillment across your core life dimensions.";
+                break;
+            case 1:
+                SetActiveNav(NavKanban, IconKanban, TextKanban);
+                KanbanViewControl.IsVisible = true;
+                HeaderTitle.Text = "Tasks & Kanban Boards";
+                HeaderSubtitle.Text = "Organize tasks, track progress across columns, and maintain productivity.";
+                break;
+            case 2:
+                SetActiveNav(NavHabits, IconHabits, TextHabits);
+                HabitsViewControl.IsVisible = true;
+                HeaderTitle.Text = "Daily Habits & Streaks";
+                HeaderSubtitle.Text = "Build consistent routines, mark daily completions, and build momentum.";
+                break;
+            case 3:
+                SetActiveNav(NavGoals, IconGoals, TextGoals);
+                GoalsViewControl.IsVisible = true;
+                HeaderTitle.Text = "Personal Goals";
+                HeaderSubtitle.Text = "Define measurable milestones, track target dates, and link actionable tasks.";
+                break;
+        }
+    }
+
+    private void SetActiveNav(Border item, Avalonia.Controls.Shapes.Path icon, TextBlock text)
+    {
+        item.Classes.Add("active");
+        icon.Fill = ColorBrush("#2563EB");
+        text.Foreground = ColorBrush("#2563EB");
+        text.FontWeight = FontWeight.SemiBold;
+    }
+
+    private void ResetNavStyle(Border item, Avalonia.Controls.Shapes.Path icon, TextBlock text)
+    {
+        item.Classes.Remove("active");
+        icon.Fill = ColorBrush("#7B879B");
+        text.Foreground = ColorBrush("#17243B");
+        text.FontWeight = FontWeight.Normal;
+    }
+
+    private static SolidColorBrush ColorBrush(string hex) => new(Color.Parse(hex));
 }

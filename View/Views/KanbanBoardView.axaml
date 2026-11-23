@@ -1,0 +1,97 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:view="clr-namespace:View"
+             x:Class="View.Views.KanbanBoardView">
+
+    <Grid RowDefinitions="Auto, Auto, *">
+        <!-- 1. Board Toolbar & Actions -->
+        <Border Grid.Row="0" Background="{DynamicResource WhiteBrush}"
+                BorderBrush="{DynamicResource BorderBrush2}" BorderThickness="0,0,0,1"
+                Padding="24,14">
+            <Grid ColumnDefinitions="Auto, *, Auto">
+                <!-- Board Selection & Management -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <TextBlock Text="Current Board:" FontSize="13" FontWeight="SemiBold"
+                               Foreground="{DynamicResource SecondaryTextBrush}" VerticalAlignment="Center" />
+                    <ComboBox x:Name="BoardsComboBox" Width="200" SelectionChanged="OnBoardSelectionChanged" />
+                    <Button Classes="ghost" Click="OnNewBoardClick" ToolTip.Tip="Create a new board">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <Path Data="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" Fill="{DynamicResource PrimaryTextBrush}"
+                                  Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center" />
+                            <TextBlock Text="New Board" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="DeleteBoardBtn" Classes="ghost" Click="OnDeleteBoardClick" ToolTip.Tip="Delete this board">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <Path Data="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                                  Fill="{DynamicResource ErrorBrush}" Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center" />
+                            <TextBlock Text="Delete" Foreground="{DynamicResource ErrorBrush}" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <!-- Board Description / Subtitle -->
+                <TextBlock x:Name="BoardDescText" Grid.Column="1" TextTrimming="CharacterEllipsis"
+                           FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}"
+                           VerticalAlignment="Center" Margin="16,0" />
+
+                <!-- Refresh Button -->
+                <Button Grid.Column="2" Classes="ghost" Click="OnRefreshClick" ToolTip.Tip="Refresh board">
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <Path Data="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"
+                              Fill="{DynamicResource PrimaryTextBrush}" Width="12" Height="12" Stretch="Uniform" VerticalAlignment="Center" />
+                        <TextBlock Text="Refresh" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- 2. Dynamic Statistics Banner -->
+        <Border Grid.Row="1" Background="#F8FAFC" BorderBrush="{DynamicResource BorderBrush2}" BorderThickness="0,0,0,1" Padding="24,12">
+            <Grid ColumnDefinitions="*, *, *, *, *">
+                <Border Grid.Column="0" Margin="4,0" Background="{DynamicResource WhiteBrush}" CornerRadius="8" BorderBrush="{DynamicResource BorderBrush2}" BorderThickness="1" Padding="12,8">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="Total Tasks" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource SecondaryTextBrush}" />
+                        <TextBlock x:Name="StatTotal" Text="0" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource NavyBrush}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Margin="4,0" Background="{DynamicResource WhiteBrush}" CornerRadius="8" BorderBrush="{DynamicResource BorderBrush2}" BorderThickness="1" Padding="12,8">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="In Progress" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource SecondaryTextBrush}" />
+                        <TextBlock x:Name="StatInProgress" Text="0" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource PrimaryBlueBrush}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="2" Margin="4,0" Background="{DynamicResource WhiteBrush}" CornerRadius="8" BorderBrush="{DynamicResource BorderBrush2}" BorderThickness="1" Padding="12,8">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="Completed" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource SecondaryTextBrush}" />
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock x:Name="StatCompleted" Text="0" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource TealBrush}" />
+                            <TextBlock x:Name="StatPercent" Text="(0%)" FontSize="12" FontWeight="SemiBold" Foreground="{DynamicResource SecondaryTextBrush}" VerticalAlignment="Bottom" Margin="0,0,0,2" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="3" Margin="4,0" Background="{DynamicResource WhiteBrush}" CornerRadius="8" BorderBrush="{DynamicResource BorderBrush2}" BorderThickness="1" Padding="12,8">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="Due Next 7 Days" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource SecondaryTextBrush}" />
+                        <TextBlock x:Name="StatDueSoon" Text="0" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource WarningBrush}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="4" Margin="4,0" Background="{DynamicResource WhiteBrush}" CornerRadius="8" BorderBrush="{DynamicResource BorderBrush2}" BorderThickness="1" Padding="12,8">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="Overdue" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource SecondaryTextBrush}" />
+                        <TextBlock x:Name="StatOverdue" Text="0" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource ErrorBrush}" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- 3. Kanban Columns List (Horizontal Scroll) -->
+        <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+            <StackPanel x:Name="ColumnsContainer" Orientation="Horizontal" Spacing="16" Margin="24,20" />
+        </ScrollViewer>
+    </Grid>
+</UserControl>

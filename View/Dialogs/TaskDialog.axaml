@@ -1,0 +1,62 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="View.Dialogs.TaskDialog"
+        Title="Task Details"
+        Width="480" Height="500"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+
+    <Border Background="{DynamicResource WhiteBrush}" Padding="24">
+        <Grid RowDefinitions="Auto, *, Auto">
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,16">
+                <TextBlock x:Name="DialogTitle" Text="New Task" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource NavyBrush}" />
+                <TextBlock Text="Set task title, priority, due date, and details." FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+            </StackPanel>
+
+            <!-- Form -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel Spacing="14" Margin="0,0,10,0">
+                    <StackPanel Spacing="6">
+                        <TextBlock Classes="label" Text="Task Title *" />
+                        <TextBox x:Name="TitleTextBox" Watermark="e.g. Finish chemistry project report" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="6">
+                        <TextBlock Classes="label" Text="Description (Optional)" />
+                        <TextBox x:Name="DescTextBox" Watermark="Provide additional instructions or context" Height="70" AcceptsReturn="True" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <Grid ColumnDefinitions="*, *">
+                        <StackPanel Grid.Column="0" Spacing="6" Margin="0,0,6,0">
+                            <TextBlock Classes="label" Text="Priority" />
+                            <ComboBox x:Name="PriorityComboBox" HorizontalAlignment="Stretch" SelectedIndex="1">
+                                <ComboBoxItem Content="Low" />
+                                <ComboBoxItem Content="Medium" />
+                                <ComboBoxItem Content="High" />
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Spacing="6" Margin="6,0,0,0">
+                            <TextBlock Classes="label" Text="Est. Minutes (Optional)" />
+                            <TextBox x:Name="DurationTextBox" Watermark="e.g. 45" />
+                        </StackPanel>
+                    </Grid>
+
+                    <StackPanel Spacing="6">
+                        <TextBlock Classes="label" Text="Due Date (Optional - YYYY-MM-DD)" />
+                        <TextBox x:Name="DueDateTextBox" Watermark="YYYY-MM-DD (e.g. 2026-12-01)" />
+                    </StackPanel>
+
+                    <TextBlock x:Name="ErrorText" Foreground="{DynamicResource ErrorBrush}" FontSize="12" IsVisible="False" TextWrapping="Wrap" />
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Actions -->
+            <Grid Grid.Row="2" ColumnDefinitions="*, *" Margin="0,16,0,0">
+                <Button Classes="ghost" Content="Cancel" HorizontalAlignment="Stretch" Margin="0,0,6,0" Click="OnCancelClick" />
+                <Button Classes="primary" Content="Save Task" HorizontalAlignment="Stretch" Margin="6,0,0,0" Click="OnSaveClick" />
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

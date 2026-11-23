@@ -1,0 +1,39 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="View.Dialogs.BoardDialog"
+        Title="Board Details"
+        Width="440" Height="300"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+
+    <Border Background="{DynamicResource WhiteBrush}" Padding="24">
+        <Grid RowDefinitions="Auto, *, Auto">
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,16">
+                <TextBlock x:Name="DialogTitle" Text="New Kanban Board" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource NavyBrush}" />
+                <TextBlock Text="Enter the board name and optional description." FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+            </StackPanel>
+
+            <!-- Form -->
+            <StackPanel Grid.Row="1" Spacing="14">
+                <StackPanel Spacing="6">
+                    <TextBlock Classes="label" Text="Board Title" />
+                    <TextBox x:Name="TitleTextBox" Watermark="e.g. Work Projects, Home Renovations" />
+                </StackPanel>
+
+                <StackPanel Spacing="6">
+                    <TextBlock Classes="label" Text="Description (Optional)" />
+                    <TextBox x:Name="DescTextBox" Watermark="Short summary of this board" Height="60" AcceptsReturn="True" TextWrapping="Wrap" />
+                </StackPanel>
+
+                <TextBlock x:Name="ErrorText" Foreground="{DynamicResource ErrorBrush}" FontSize="12" IsVisible="False" />
+            </StackPanel>
+
+            <!-- Actions -->
+            <Grid Grid.Row="2" ColumnDefinitions="*, *" Margin="0,16,0,0">
+                <Button Classes="ghost" Content="Cancel" HorizontalAlignment="Stretch" Margin="0,0,6,0" Click="OnCancelClick" />
+                <Button Classes="primary" Content="Save Board" HorizontalAlignment="Stretch" Margin="6,0,0,0" Click="OnSaveClick" />
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
