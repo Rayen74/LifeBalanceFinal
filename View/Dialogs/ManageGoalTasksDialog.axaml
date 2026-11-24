@@ -1,0 +1,34 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="View.Dialogs.ManageGoalTasksDialog"
+        Title="Manage Linked Tasks"
+        Width="580" Height="520"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
+
+    <Border Background="{DynamicResource WhiteBrush}" Padding="24">
+        <Grid RowDefinitions="Auto, *, Auto">
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,16">
+                <TextBlock x:Name="GoalTitleHeader" Text="Manage Linked Tasks" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource NavyBrush}" />
+                <TextBlock Text="Link or unlink tasks from your Kanban boards to track progress toward this goal." FontSize="12" Foreground="{DynamicResource SecondaryTextBrush}" />
+            </StackPanel>
+
+            <!-- Task List Container -->
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <StackPanel Spacing="10" Margin="0,0,8,0">
+                    <TextBlock x:Name="EmptyNotice" Text="No tasks found across your boards. Create tasks in the Kanban board first."
+                               FontSize="13" Foreground="{DynamicResource SecondaryTextBrush}" FontStyle="Italic"
+                               IsVisible="False" HorizontalAlignment="Center" Margin="0,30,0,0" />
+
+                    <StackPanel x:Name="TasksContainer" Spacing="10" />
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Footer -->
+            <Grid Grid.Row="2" Margin="0,16,0,0">
+                <Button Classes="primary" Content="Done" HorizontalAlignment="Right" Width="100" Click="OnDoneClick" />
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

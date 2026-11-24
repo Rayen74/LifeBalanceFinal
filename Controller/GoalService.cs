@@ -16,7 +16,7 @@ public class GoalService
     }
 
     /// <summary>
-    /// Lists all goals belonging to the user.
+    /// Lists all goals belonging to the user, including linked tasks and their column status for derived progress calculation.
     /// </summary>
     public async Task<List<PersonalGoal>> GetUserGoalsAsync(Guid userId)
     {
@@ -26,9 +26,49 @@ public class GoalService
             .Where(g => g.UserId == userId)
             .Include(g => g.TaskGoals)
                 .ThenInclude(tg => tg.Task)
+                    .ThenInclude(t => t!.Column)
             .OrderBy(g => g.Status)
             .ThenByDescending(g => g.CreatedAt)
             .ToListAsync();
+    }
+
+    /// <summary>
+    /// Retrieves all tasks belonging to the user across all boards, including column and board details.
+    /// </summary>
+    public async Task<List<TaskItem>> GetUserTasksAsync(Guid userId)
+    {
+        await using var db = _dbFactory();
+        return await db.TaskItems
+            .AsNoTracking()
+            .Include(t => t.Column)
+                .ThenInclude(c => c!.Board)
+            .Where(t => t.Column != null && t.Column.Board != null && t.Column.Board.UserId == userId)
+            .OrderBy(t => t.Column!.Board!.Name)
+            .ThenBy(t => t.Column!.Position)
+            .ThenBy(t => t.Position)
+            .ToListAsync();
+    }
+
+    /// <summary>
+    /// Computes derived goal progress from linked tasks:
+    /// (CompletedLinkedTasks / TotalLinkedTasks) * 100.
+    /// A task is completed when its current column has IsCompleted == true.
+    /// </summary>
+    public static GoalProgressInfo CalculateGoalProgress(PersonalGoal goal)
+    {
+        var validTasks = goal.TaskGoals
+            .Where(tg => tg.Task != null)
+            .Select(tg => tg.Task!)
+            .ToList();
+
+        if (validTasks.Count == 0)
+        {
+            return new GoalProgressInfo(0, 0, 0, false);
+        }
+
+        int completedCount = validTasks.Count(t => t.Column != null && t.Column.IsCompleted);
+        double percentage = Math.Round((double)completedCount / validTasks.Count * 100, 1);
+        return new GoalProgressInfo(completedCount, validTasks.Count, percentage, true);
     }
 
     /// <summary>

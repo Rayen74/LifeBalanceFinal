@@ -29,3 +29,13 @@ public record BoardStatistics(
     int DueInNext7Days,
     int OverdueTasks
 );
+
+/// <summary>
+/// Derived goal progress calculated dynamically from linked tasks.
+/// </summary>
+public record GoalProgressInfo(
+    int CompletedTasks,
+    int TotalTasks,
+    double Percentage,
+    bool HasTasks
+);

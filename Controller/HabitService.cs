@@ -9,10 +9,12 @@ namespace Controller;
 public class HabitService
 {
     private readonly Func<LifeBalanceDbContext> _dbFactory;
+    private readonly ILocalDateProvider _dateProvider;
 
-    public HabitService(Func<LifeBalanceDbContext>? dbFactory = null)
+    public HabitService(Func<LifeBalanceDbContext>? dbFactory = null, ILocalDateProvider? dateProvider = null)
     {
         _dbFactory = dbFactory ?? (() => new LifeBalanceDbContext());
+        _dateProvider = dateProvider ?? SystemLocalDateProvider.Instance;
     }
 
     /// <summary>
@@ -218,7 +220,7 @@ public class HabitService
             .OrderByDescending(d => d)
             .ToListAsync();
 
-        return CalculateStreakFromDates(dates, referenceDate ?? DateOnly.FromDateTime(DateTime.UtcNow));
+        return CalculateStreakFromDates(dates, referenceDate ?? _dateProvider.GetToday());
     }
 
     /// <summary>

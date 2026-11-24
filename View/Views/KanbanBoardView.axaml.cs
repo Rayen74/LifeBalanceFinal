@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -15,6 +16,7 @@ namespace View.Views;
 
 public partial class KanbanBoardView : UserControl
 {
+    private readonly ILocalDateProvider _dateProvider = SystemLocalDateProvider.Instance;
     private readonly BoardService _boardService = new();
     private List<TaskBoard> _boards = new();
     private TaskBoard? _currentBoard;
@@ -110,6 +112,7 @@ public partial class KanbanBoardView : UserControl
         }
     }
 
+#pragma warning disable CS0618 // Type or member is obsolete in Avalonia 11.3 for future v12 transition
     private Border CreateColumnPanel(TaskColumn col, int colIndex, int totalCols)
     {
         var columnBorder = new Border
@@ -121,6 +124,59 @@ public partial class KanbanBoardView : UserControl
             CornerRadius = new CornerRadius(10),
             Padding = new Thickness(14)
         };
+
+        // Allow drop on column panel
+        DragDrop.SetAllowDrop(columnBorder, true);
+
+        columnBorder.AddHandler(DragDrop.DragEnterEvent, (s, e) =>
+        {
+            if (e.Data.Contains("LifeBalance.TaskId"))
+            {
+                columnBorder.BorderBrush = ColorBrush("#2563EB");
+                columnBorder.BorderThickness = new Thickness(2);
+                e.DragEffects = DragDropEffects.Move;
+                e.Handled = true;
+            }
+        });
+
+        columnBorder.AddHandler(DragDrop.DragLeaveEvent, (s, e) =>
+        {
+            columnBorder.BorderBrush = ColorBrush("#E2E8F0");
+            columnBorder.BorderThickness = new Thickness(1);
+            e.Handled = true;
+        });
+
+        columnBorder.AddHandler(DragDrop.DragOverEvent, (s, e) =>
+        {
+            if (e.Data.Contains("LifeBalance.TaskId"))
+            {
+                e.DragEffects = DragDropEffects.Move;
+                e.Handled = true;
+            }
+        });
+
+        columnBorder.AddHandler(DragDrop.DropEvent, async (s, e) =>
+        {
+            columnBorder.BorderBrush = ColorBrush("#E2E8F0");
+            columnBorder.BorderThickness = new Thickness(1);
+
+            if (!e.Data.Contains("LifeBalance.TaskId")) return;
+            e.Handled = true;
+
+            var taskIdStr = e.Data.Get("LifeBalance.TaskId") as string;
+            var sourceColIdStr = e.Data.Get("LifeBalance.SourceColumnId") as string;
+            var sourcePosStr = e.Data.Get("LifeBalance.SourcePosition") as string;
+
+            if (Guid.TryParse(taskIdStr, out var taskId) &&
+                Guid.TryParse(sourceColIdStr, out var sourceColId) &&
+                int.TryParse(sourcePosStr, out var sourcePos))
+            {
+                int targetPos = KanbanPositionHelper.CalculateDropPosition(
+                    sourceColId, col.Id, sourcePos, null, false, col.Tasks.Count);
+
+                await HandleDropAsync(taskId, sourceColId, sourcePos, col.Id, targetPos);
+            }
+        });
 
         var mainLayout = new Grid
         {
@@ -200,8 +256,8 @@ public partial class KanbanBoardView : UserControl
         for (int i = 0; i < orderedTasks.Count; i++)
         {
             var task = orderedTasks[i];
-            var card = CreateTaskCard(task, col, colIndex, totalCols);
-            tasksStack.Children.Add(card);
+            var cardContainer = CreateTaskCard(task, col, colIndex, totalCols);
+            tasksStack.Children.Add(cardContainer);
         }
 
         tasksScrollViewer.Content = tasksStack;
@@ -214,8 +270,28 @@ public partial class KanbanBoardView : UserControl
         return columnBorder;
     }
 
-    private Border CreateTaskCard(TaskItem task, TaskColumn col, int colIndex, int totalCols)
+    private Control CreateTaskCard(TaskItem task, TaskColumn col, int colIndex, int totalCols)
     {
+        var cardContainer = new StackPanel { Spacing = 0 };
+
+        var topInsertionLine = new Border
+        {
+            Height = 3,
+            Background = ColorBrush("#2563EB"),
+            CornerRadius = new CornerRadius(1.5),
+            Margin = new Thickness(0, 0, 0, 4),
+            IsVisible = false
+        };
+
+        var bottomInsertionLine = new Border
+        {
+            Height = 3,
+            Background = ColorBrush("#2563EB"),
+            CornerRadius = new CornerRadius(1.5),
+            Margin = new Thickness(0, 4, 0, 0),
+            IsVisible = false
+        };
+
         var card = new Border
         {
             Background = ColorBrush("#FFFFFF"),
@@ -231,13 +307,132 @@ public partial class KanbanBoardView : UserControl
             })
         };
 
+        // Enable drag & drop target on the card
+        DragDrop.SetAllowDrop(card, true);
+
+        card.AddHandler(DragDrop.DragOverEvent, (s, e) =>
+        {
+            if (e.Data.Contains("LifeBalance.TaskId"))
+            {
+                e.DragEffects = DragDropEffects.Move;
+                e.Handled = true;
+                var pt = e.GetPosition(card);
+                bool dropAfter = pt.Y > (card.Bounds.Height / 2.0);
+                topInsertionLine.IsVisible = !dropAfter;
+                bottomInsertionLine.IsVisible = dropAfter;
+            }
+        });
+
+        card.AddHandler(DragDrop.DragLeaveEvent, (s, e) =>
+        {
+            topInsertionLine.IsVisible = false;
+            bottomInsertionLine.IsVisible = false;
+            e.Handled = true;
+        });
+
+        card.AddHandler(DragDrop.DropEvent, async (s, e) =>
+        {
+            topInsertionLine.IsVisible = false;
+            bottomInsertionLine.IsVisible = false;
+
+            if (!e.Data.Contains("LifeBalance.TaskId")) return;
+            e.Handled = true;
+
+            var taskIdStr = e.Data.Get("LifeBalance.TaskId") as string;
+            var sourceColIdStr = e.Data.Get("LifeBalance.SourceColumnId") as string;
+            var sourcePosStr = e.Data.Get("LifeBalance.SourcePosition") as string;
+
+            if (Guid.TryParse(taskIdStr, out var taskId) &&
+                Guid.TryParse(sourceColIdStr, out var sourceColId) &&
+                int.TryParse(sourcePosStr, out var sourcePos))
+            {
+                var pt = e.GetPosition(card);
+                bool dropAfter = pt.Y > (card.Bounds.Height / 2.0);
+                int targetPos = KanbanPositionHelper.CalculateDropPosition(
+                    sourceColId, col.Id, sourcePos, task.Position, dropAfter, col.Tasks.Count);
+
+                await HandleDropAsync(taskId, sourceColId, sourcePos, col.Id, targetPos);
+            }
+        });
+
         var cardStack = new StackPanel { Spacing = 8 };
 
-        // Priority Pill & Due Date
+        // Top Row: Drag Handle, Priority Pill & Due Date
         var metaGrid = new Grid
         {
-            ColumnDefinitions = new ColumnDefinitions("Auto, *")
+            ColumnDefinitions = new ColumnDefinitions("Auto, Auto, *")
         };
+
+        // Dedicated Drag Handle
+        var dragHandle = new Border
+        {
+            Width = 20,
+            Height = 20,
+            Background = Brushes.Transparent,
+            Cursor = new Cursor(StandardCursorType.SizeAll),
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(0, 0, 6, 0)
+        };
+        ToolTip.SetTip(dragHandle, "Drag to reorder or move across columns");
+
+        var gripText = new TextBlock
+        {
+            Text = "⋮⋮",
+            FontSize = 13,
+            FontWeight = FontWeight.Bold,
+            Foreground = ColorBrush("#94A3B8"),
+            VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Center
+        };
+        dragHandle.Child = gripText;
+
+        Point? dragStartPoint = null;
+        bool isDragging = false;
+
+        dragHandle.PointerPressed += (s, e) =>
+        {
+            if (e.GetCurrentPoint(dragHandle).Properties.IsLeftButtonPressed)
+            {
+                dragStartPoint = e.GetPosition(null);
+            }
+        };
+
+        dragHandle.PointerMoved += async (s, e) =>
+        {
+            if (dragStartPoint.HasValue && !isDragging)
+            {
+                var current = e.GetPosition(null);
+                var diff = current - dragStartPoint.Value;
+                if (Math.Sqrt(diff.X * diff.X + diff.Y * diff.Y) > 4)
+                {
+                    isDragging = true;
+                    card.Opacity = 0.4;
+                    var data = new DataObject();
+                    data.Set("LifeBalance.TaskId", task.Id.ToString());
+                    data.Set("LifeBalance.SourceColumnId", col.Id.ToString());
+                    data.Set("LifeBalance.SourcePosition", task.Position.ToString());
+                    try
+                    {
+                        await DragDrop.DoDragDrop(e, data, DragDropEffects.Move);
+                    }
+                    finally
+                    {
+                        card.Opacity = 1.0;
+                        isDragging = false;
+                        dragStartPoint = null;
+                    }
+                }
+            }
+        };
+
+        dragHandle.PointerReleased += (s, e) =>
+        {
+            dragStartPoint = null;
+            isDragging = false;
+        };
+
+        Grid.SetColumn(dragHandle, 0);
+        metaGrid.Children.Add(dragHandle);
 
         var (pillBg, pillFg) = task.Priority switch
         {
@@ -260,11 +455,12 @@ public partial class KanbanBoardView : UserControl
             Foreground = ColorBrush(pillFg)
         };
         priorityPill.Child = priorityText;
-        Grid.SetColumn(priorityPill, 0);
+        Grid.SetColumn(priorityPill, 1);
+        metaGrid.Children.Add(priorityPill);
 
         if (task.DueDate.HasValue)
         {
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            var today = _dateProvider.GetToday();
             var isOverdue = !col.IsCompleted && task.DueDate.Value < today;
             var dueBlock = new TextBlock
             {
@@ -275,11 +471,10 @@ public partial class KanbanBoardView : UserControl
                 HorizontalAlignment = HorizontalAlignment.Right,
                 VerticalAlignment = VerticalAlignment.Center
             };
-            Grid.SetColumn(dueBlock, 1);
+            Grid.SetColumn(dueBlock, 2);
             metaGrid.Children.Add(dueBlock);
         }
 
-        metaGrid.Children.Add(priorityPill);
         cardStack.Children.Add(metaGrid);
 
         // Title
@@ -313,7 +508,7 @@ public partial class KanbanBoardView : UserControl
             cardStack.Children.Add(descText);
         }
 
-        // Action Buttons Row: Left, Right, Edit, Delete
+        // Action Buttons Row: Left, Right (Accessible Movement), Edit, Delete
         var actionsGrid = new Grid
         {
             ColumnDefinitions = new ColumnDefinitions("Auto, Auto, *, Auto")
@@ -326,7 +521,7 @@ public partial class KanbanBoardView : UserControl
             Padding = new Thickness(6, 2),
             IsEnabled = colIndex > 0
         };
-        ToolTip.SetTip(moveLeftBtn, "Move Left");
+        ToolTip.SetTip(moveLeftBtn, "Move to previous column");
         moveLeftBtn.Classes.Add("ghost");
         moveLeftBtn.Click += async (_, _) => await MoveTaskDirectionAsync(task.Id, -1);
         Grid.SetColumn(moveLeftBtn, 0);
@@ -340,7 +535,7 @@ public partial class KanbanBoardView : UserControl
             Margin = new Thickness(4, 0, 0, 0),
             IsEnabled = colIndex < totalCols - 1
         };
-        ToolTip.SetTip(moveRightBtn, "Move Right");
+        ToolTip.SetTip(moveRightBtn, "Move to next column");
         moveRightBtn.Classes.Add("ghost");
         moveRightBtn.Click += async (_, _) => await MoveTaskDirectionAsync(task.Id, 1);
         Grid.SetColumn(moveRightBtn, 1);
@@ -373,8 +568,36 @@ public partial class KanbanBoardView : UserControl
         cardStack.Children.Add(actionsGrid);
 
         card.Child = cardStack;
-        return card;
+
+        cardContainer.Children.Add(topInsertionLine);
+        cardContainer.Children.Add(card);
+        cardContainer.Children.Add(bottomInsertionLine);
+
+        return cardContainer;
     }
+
+    private async Task HandleDropAsync(Guid taskId, Guid sourceColId, int sourcePos, Guid targetColId, int targetPos)
+    {
+        var user = App.Auth.CurrentUser;
+        if (user == null || _currentBoard == null) return;
+
+        // Dropping into exact same position in same column -> no change
+        if (sourceColId == targetColId && sourcePos == targetPos)
+        {
+            return;
+        }
+
+        var result = await _boardService.MoveTaskAsync(user.Id, taskId, targetColId, targetPos);
+        if (!result.Success)
+        {
+            // Reset to persisted state
+            await RefreshCurrentBoardAsync();
+            return;
+        }
+
+        await RefreshCurrentBoardAsync();
+    }
+#pragma warning restore CS0618
 
     private async Task AddTaskToColumnAsync(Guid columnId)
     {

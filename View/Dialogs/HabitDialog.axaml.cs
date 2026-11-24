@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Controller;
 using Model;
 
 namespace View.Dialogs;
@@ -10,7 +11,7 @@ public partial class HabitDialog : Window
 {
     public string HabitName { get; private set; } = string.Empty;
     public string? HabitDescription { get; private set; }
-    public DateOnly StartDate { get; private set; } = DateOnly.FromDateTime(DateTime.UtcNow);
+    public DateOnly StartDate { get; private set; } = SystemLocalDateProvider.Instance.GetToday();
     public bool IsConfirmed { get; private set; }
 
     public HabitDialog() : this(null)
@@ -45,7 +46,7 @@ public partial class HabitDialog : Window
         }
 
         var startText = StartDateTextBox.Text?.Trim();
-        DateOnly startDate = DateOnly.FromDateTime(DateTime.UtcNow);
+        DateOnly startDate = SystemLocalDateProvider.Instance.GetToday();
         if (!string.IsNullOrWhiteSpace(startText))
         {
             if (DateOnly.TryParseExact(startText, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed))

@@ -32,7 +32,7 @@
                         <ComboBox x:Name="StatusComboBox" HorizontalAlignment="Stretch" SelectedIndex="0">
                             <ComboBoxItem Content="Active" />
                             <ComboBoxItem Content="Completed" />
-                            <ComboBoxItem Content="Archived" />
+                            <ComboBoxItem Content="Cancelled" />
                         </ComboBox>
                     </StackPanel>
 

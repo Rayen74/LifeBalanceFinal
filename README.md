@@ -209,16 +209,18 @@ $env:LIFEBALANCE_TEST_DB = "Host=localhost;Port=5432;Database=lifebalancedb_test
 dotnet test Tests/Tests.csproj
 ```
 
-All 29 integration tests execute against the test database and verify:
-* User registration and UUID generation.
+All 41 unit and integration tests execute against the test database and verify:
+* User registration, UUID generation, and authentication.
 * BCrypt hashing (no plaintext password storage).
 * Case-insensitive and trimmed duplicate email rejection.
 * Session creation, recovery across restarts, and invalidation on logout.
 * Default column creation (`To Do`, `In Progress`, `Done`) and card positioning.
 * Task moving across columns, position renumbering, and completion timestamp handling (`CompletedAt`).
+* Drag-and-drop position calculation logic and reordering without off-by-one errors (`KanbanPositionHelper`).
 * Strict multi-user data isolation across Kanban boards, tasks, habits, and goals.
-* Dynamic board statistics calculations (Total, In Progress, Completed, Due Next 7 Days, Overdue).
-* Goal creation and task linking with cross-user rejection.
+* Deterministic dynamic board statistics (Total, In Progress, Completed, Due Next 7 Days, Overdue) with local calendar dates (`ILocalDateProvider`).
+* Goal creation and task linking across user boards (`ManageGoalTasksDialog`).
+* Derived goal progress calculation from linked task states.
 * Habit creation, daily completion logging, uniqueness constraint enforcement, and consecutive streak calculations.
 * Database constraint enforcement.
 

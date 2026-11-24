@@ -127,6 +127,18 @@ public partial class GoalsView : UserControl
         }
 
         var actionsStack = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, VerticalAlignment = VerticalAlignment.Center };
+
+        var manageTasksBtn = new Button
+        {
+            Content = "Manage Tasks",
+            FontSize = 11,
+            FontWeight = FontWeight.SemiBold,
+            Padding = new Thickness(8, 4)
+        };
+        manageTasksBtn.Classes.Add("primary");
+        manageTasksBtn.Click += async (_, _) => await OpenManageTasksAsync(goal, userId);
+        actionsStack.Children.Add(manageTasksBtn);
+
         var editBtn = new Button
         {
             Content = "Edit",
@@ -158,6 +170,48 @@ public partial class GoalsView : UserControl
         headerGrid.Children.Add(actionsStack);
         mainStack.Children.Add(headerGrid);
 
+        // Derived Progress Section
+        var progress = GoalService.CalculateGoalProgress(goal);
+        if (!progress.HasTasks)
+        {
+            var noProgressText = new TextBlock
+            {
+                Text = "No tasks linked yet",
+                FontSize = 12,
+                FontStyle = FontStyle.Italic,
+                Foreground = ColorBrush("#7B879B"),
+                Margin = new Thickness(0, 2, 0, 2)
+            };
+            mainStack.Children.Add(noProgressText);
+        }
+        else
+        {
+            var progressContainer = new StackPanel { Spacing = 5, Margin = new Thickness(0, 2, 0, 2) };
+
+            var progressLabel = new TextBlock
+            {
+                Text = $"{progress.CompletedTasks} of {progress.TotalTasks} tasks completed — {progress.Percentage}%",
+                FontSize = 12,
+                FontWeight = FontWeight.SemiBold,
+                Foreground = ColorBrush("#14264D")
+            };
+            progressContainer.Children.Add(progressLabel);
+
+            var progressBar = new ProgressBar
+            {
+                Minimum = 0,
+                Maximum = 100,
+                Value = progress.Percentage,
+                Height = 6,
+                CornerRadius = new CornerRadius(3),
+                Background = ColorBrush("#E2E8F0"),
+                Foreground = ColorBrush(progress.Percentage >= 100 ? "#16A34A" : "#2563EB")
+            };
+            progressContainer.Children.Add(progressBar);
+
+            mainStack.Children.Add(progressContainer);
+        }
+
         // Linked Tasks Section
         var tasksCount = goal.TaskGoals.Count;
         var tasksHeader = new TextBlock
@@ -175,22 +229,42 @@ public partial class GoalsView : UserControl
             var tasksWrap = new WrapPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 2, 0, 0) };
             foreach (var tg in goal.TaskGoals)
             {
+                bool isTaskCompleted = tg.Task?.Column?.IsCompleted == true;
                 var taskTag = new Border
                 {
-                    Background = ColorBrush("#F1F5F9"),
-                    BorderBrush = ColorBrush("#E2E8F0"),
+                    Background = ColorBrush(isTaskCompleted ? "#DCFCE7" : "#F1F5F9"),
+                    BorderBrush = ColorBrush(isTaskCompleted ? "#86EFAC" : "#E2E8F0"),
                     BorderThickness = new Thickness(1),
                     CornerRadius = new CornerRadius(6),
                     Padding = new Thickness(8, 4),
                     Margin = new Thickness(0, 0, 8, 6)
                 };
+
+                var tagStack = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
+                if (isTaskCompleted)
+                {
+                    tagStack.Children.Add(new TextBlock
+                    {
+                        Text = "✓",
+                        FontSize = 10,
+                        FontWeight = FontWeight.Bold,
+                        Foreground = ColorBrush("#16A34A")
+                    });
+                }
+
                 var taskText = new TextBlock
                 {
                     Text = tg.Task?.Title ?? "Task",
                     FontSize = 11,
-                    Foreground = ColorBrush("#17243B")
+                    Foreground = ColorBrush(isTaskCompleted ? "#166534" : "#17243B")
                 };
-                taskTag.Child = taskText;
+                if (isTaskCompleted)
+                {
+                    taskText.TextDecorations = TextDecorations.Strikethrough;
+                }
+
+                tagStack.Children.Add(taskText);
+                taskTag.Child = tagStack;
                 tasksWrap.Children.Add(taskTag);
             }
             mainStack.Children.Add(tasksWrap);
@@ -209,6 +283,25 @@ public partial class GoalsView : UserControl
 
         card.Child = mainStack;
         return card;
+    }
+
+    private async Task OpenManageTasksAsync(PersonalGoal goal, Guid userId)
+    {
+        var owner = VisualRoot as Window;
+        var dialog = new ManageGoalTasksDialog(goal, userId);
+        if (owner != null)
+        {
+            await dialog.ShowDialog(owner);
+        }
+        else
+        {
+            dialog.Show();
+        }
+
+        if (dialog.HasChanges)
+        {
+            await LoadGoalsAsync();
+        }
     }
 
     private async Task EditGoalAsync(PersonalGoal goal, Guid userId)

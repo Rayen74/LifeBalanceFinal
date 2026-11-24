@@ -15,6 +15,7 @@ namespace View.Views;
 
 public partial class HabitsView : UserControl
 {
+    private readonly ILocalDateProvider _dateProvider = SystemLocalDateProvider.Instance;
     private readonly HabitService _habitService = new();
 
     public HabitsView()
@@ -161,7 +162,7 @@ public partial class HabitsView : UserControl
             Margin = new Thickness(0, 14, 0, 0)
         };
 
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var today = _dateProvider.GetToday();
         var habitsWithCompletions = await _habitService.GetUserHabitsAsync(userId, today.AddDays(-6), today);
         var currentHabit = habitsWithCompletions.FirstOrDefault(h => h.Id == habit.Id);
         var completedDates = currentHabit?.Completions.Select(c => c.CompletedOn).ToHashSet() ?? new HashSet<DateOnly>();

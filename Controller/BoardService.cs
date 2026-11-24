@@ -9,10 +9,12 @@ namespace Controller;
 public class BoardService
 {
     private readonly Func<LifeBalanceDbContext> _dbFactory;
+    private readonly ILocalDateProvider _dateProvider;
 
-    public BoardService(Func<LifeBalanceDbContext>? dbFactory = null)
+    public BoardService(Func<LifeBalanceDbContext>? dbFactory = null, ILocalDateProvider? dateProvider = null)
     {
         _dbFactory = dbFactory ?? (() => new LifeBalanceDbContext());
+        _dateProvider = dateProvider ?? SystemLocalDateProvider.Instance;
     }
 
     #region Board Management
@@ -440,6 +442,10 @@ public class BoardService
 
     /// <summary>
     /// Calculates live summary statistics for a board without storing computed columns.
+    /// Semantics:
+    /// - Columns with IsCompleted == true represent completed work.
+    /// - The first non-completed column (ordered by Position) represents the backlog / To Do stage.
+    /// - All other non-completed columns represent work in progress.
     /// </summary>
     public async Task<BoardStatistics> GetBoardStatisticsAsync(Guid userId, Guid boardId)
     {
@@ -456,26 +462,32 @@ public class BoardService
         var allTasks = board.Columns.SelectMany(c => c.Tasks).ToList();
         int total = allTasks.Count;
 
-        // Column where IsCompleted is true
+        // Completed tasks: all tasks in columns marked IsCompleted == true
         int completed = board.Columns
             .Where(c => c.IsCompleted)
             .SelectMany(c => c.Tasks)
             .Count();
 
-        // In-progress: not completed, and not in the first column (position 0)
-        int inProgress = board.Columns
-            .Where(c => !c.IsCompleted && c.Position > 0)
+        // Non-completed columns ordered by Position
+        var nonCompletedColumns = board.Columns
+            .Where(c => !c.IsCompleted)
+            .OrderBy(c => c.Position)
+            .ToList();
+
+        // The first non-completed column represents the backlog / To Do stage.
+        // Other non-completed columns represent work in progress.
+        var firstNonCompletedColumnId = nonCompletedColumns.FirstOrDefault()?.Id;
+        int inProgress = nonCompletedColumns
+            .Where(c => c.Id != firstNonCompletedColumnId)
             .SelectMany(c => c.Tasks)
             .Count();
 
         double percentage = total == 0 ? 0 : Math.Round((double)completed / total * 100, 1);
 
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
-        var inSevenDays = today.AddDays(7);
+        var today = _dateProvider.GetToday();
+        var inSevenDays = today.AddDays(6); // today through today.AddDays(6), inclusive (7 calendar days)
 
-        // Non-completed tasks with due date from today through the next 7 days
-        var nonCompletedTasks = board.Columns
-            .Where(c => !c.IsCompleted)
+        var nonCompletedTasks = nonCompletedColumns
             .SelectMany(c => c.Tasks)
             .ToList();
 
